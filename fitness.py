@@ -21,7 +21,7 @@ def initialize_database():
             )
         """)
         
-        # 🧠 CRITICAL UPGRADE: User AI Intelligence Profile Table (Replacing Placeholder Logs)
+        # User AI Intelligence Profile Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS user_ai_profile (
                 username TEXT PRIMARY KEY,
@@ -87,7 +87,7 @@ def initialize_database():
         """)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS run_history (
-                id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, date_stamp TEXT, distance_km REAL, pace_min_km REAL,
+                id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, date_logged TEXT, distance_km REAL, pace_min_km REAL,
                 FOREIGN KEY (username) REFERENCES accounts(username) ON DELETE CASCADE
             )
         """)
@@ -129,7 +129,6 @@ def calculate_secure_hash(password):
     static_salt = b"STRIKE_FIT_CORE_OS_PREMIUM_SALT_VECTOR_2026_PRODUCTION_VAULT"
     return hashlib.scrypt(password.encode(), salt=static_salt, n=16384, r=8, p=1, dklen=64).hex()
 
-# 👑 UPGRADE: Clean Onboarding Initializations (No Fake History Parameters)
 def register_user(username, password, country, preferred_time, fav_muscle, motivation):
     try:
         with sqlite3.connect("fitness_data.db") as conn:
@@ -178,3 +177,5 @@ def fetch_user_data(username, date_stamp):
         sl = cursor.fetchone() or (0.0, 0)
         cursor.execute("SELECT scripture_streak, verses_read, repairs_used, coach_persona FROM prayer_logs WHERE username=? AND date_stamp=?", (username, date_stamp))
         pr = cursor.fetchone() or (0, 'None Logged', 0, 'Drill Sergeant 🪖')
+        cursor.execute("SELECT step_count FROM step_history WHERE username=? AND date_stamp=?", (username, date_stamp))
+        sh = cursor.fetchone() or (0,)
